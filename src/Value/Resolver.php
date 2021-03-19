@@ -37,8 +37,9 @@ class Resolver implements ResolverInterface
     public function get($resource, $attribute, $layouts)
     {
         $value = $this->extractValueFromResource($resource, $attribute);
-
+        \Log::info('extractValueFromResource');
         return collect($value)->map(function($item) use ($layouts) {
+            
             $layout = $layouts->find($item->layout);
 
             if(!$layout) return;
@@ -58,11 +59,19 @@ class Resolver implements ResolverInterface
     {
         $value = data_get($resource, str_replace('->', '.', $attribute)) ?? [];
 
+        \Log::info('extractValueFromResource');
+        \Log::info($resource);
+        \Log::info($value);
+
         if($value instanceof Collection) {
+            \Log::info('value is instance of collection');
             $value = $value->toArray();
         } else if (is_string($value)) {
+            \Log::info('value is string');
             $value = json_decode($value) ?? [];
         }
+
+        \Log::info('debug', $value);
 
         // Fail silently in case data is invalid
         if (!is_array($value)) return [];
